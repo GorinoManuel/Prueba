@@ -1,0 +1,51 @@
+import enfermedades.*
+import personas.*
+
+describe "Personas" {
+	var logan
+	var frank
+	var malaria500
+	var malaria800
+	var otitis
+	var lupus
+	
+	method initialize() {
+		//Enfermedades
+		malaria500 = new EnfermedadInfecciosa(celulasAmenazadas = 500)
+		otitis = new EnfermedadInfecciosa(celulasAmenazadas = 100)
+		lupus = new EnfermedadAutoinmune(celulasAmenazadas = 10000)
+		malaria800 = new EnfermedadInfecciosa(celulasAmenazadas = 800)
+		//Personas
+		logan = new Persona(temperatura = 36, celulas = 3000000)
+		logan.contraerEnfermedad(malaria500)
+		logan.contraerEnfermedad(otitis)
+		logan.contraerEnfermedad(lupus)
+		
+		frank = new Persona(temperatura = 36, celulas = 3500000)
+	}
+	
+	test "Que Frank se contraiga de la enfermedad malaria800 está OK" { //Punto 1
+		frank.contraerEnfermedad(malaria800)
+		assert.equals(#{malaria800}, frank.enfermedades())
+	}
+	
+	test "Hacer que la malaria de Logan se reproduzca está OK" { //Punto 2
+		malaria500.reproducir()
+		assert.equals(1000, malaria500.celulasAmenazadas())
+	}
+	
+	test "Hacer que pase un dia logan y revisar las condiciones del punto 3 esta OK" { //Punto 3
+		logan.vivirUnDia(0)
+		assert.equals(lupus, logan.enfermedadQueMasCelulasAfecta()) //a
+		assert.that(!logan.enComa()) //b
+		assert.equals(0, logan.celulasAfectadasEnfermedadesAgresivas()) //c
+	}
+	
+	test "Hacer que logan pase 31 dias y revise las condiciones del punto 3 está OK" { // Punto 4
+		logan.pasarDias(31)
+		assert.equals(lupus, logan.enfermedadQueMasCelulasAfecta()) //a
+		assert.that(logan.enComa()) //b
+		assert.equals(10000, logan.celulasAfectadasEnfermedadesAgresivas()) //c
+	}
+	
+}
