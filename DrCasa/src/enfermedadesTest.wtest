@@ -1,5 +1,9 @@
-import enfermedades.*
+import enfermedadesAutoInmunes.*
+import enfermedadesInfecciosas.*
 import personas.*
+import medico.*
+import jefeDeDepartamento.*
+import laMuerte.*
 
 describe "Personas" {
 	var logan
@@ -8,6 +12,10 @@ describe "Personas" {
 	var malaria800
 	var otitis
 	var lupus
+	// Temporada 2
+	var house 
+	var cameron
+	var malaria3000
 	
 	method initialize() {
 		//Enfermedades
@@ -15,6 +23,7 @@ describe "Personas" {
 		otitis = new EnfermedadInfecciosa(celulasAmenazadas = 100)
 		lupus = new EnfermedadAutoinmune(celulasAmenazadas = 10000)
 		malaria800 = new EnfermedadInfecciosa(celulasAmenazadas = 800)
+		malaria3000 = new EnfermedadInfecciosa(celulasAmenazadas = 3000)
 		//Personas
 		logan = new Persona(temperatura = 36, celulas = 3000000)
 		logan.contraerEnfermedad(malaria500)
@@ -22,6 +31,11 @@ describe "Personas" {
 		logan.contraerEnfermedad(lupus)
 		
 		frank = new Persona(temperatura = 36, celulas = 3500000)
+		// Medicos
+		house = new JefeDeDepartamento(dosis = 0, celulas = 3000000, temperatura = 36)
+		cameron = new Medico(dosis =10, celulas = 3000000, temperatura = 36)
+		house.subordinarA(cameron) 
+		
 	}
 	
 	test "Que Frank se contraiga de la enfermedad malaria800 está OK" { //Punto 1
@@ -35,9 +49,9 @@ describe "Personas" {
 	}
 	
 	test "Hacer que pase un dia logan y revisar las condiciones del punto 3 esta OK" { //Punto 3
-		logan.vivirUnDia(0)
+		logan.vivirUnDia()
 		assert.equals(lupus, logan.enfermedadQueMasCelulasAfecta()) //a
-		assert.that(!logan.enComa()) //b
+		assert.notThat(logan.enComa()) //b
 		assert.equals(0, logan.celulasAfectadasEnfermedadesAgresivas()) //c
 	}
 	
@@ -48,4 +62,38 @@ describe "Personas" {
 		assert.equals(10000, logan.celulasAfectadasEnfermedadesAgresivas()) //c
 	}
 	
+	test "Punto 1 Temporada 2" {
+		malaria3000.atenuarEn(100)
+		lupus.atenuarEn(500)
+		assert.equals(2900, malaria3000.celulasAmenazadas())
+		assert.equals(9500, lupus.celulasAmenazadas())
+	}
+
+	test "Punto 2 Temporada 2" {
+		cameron.atenderA(logan)
+		assert.equals(350, malaria500.celulasAmenazadas())
+		assert.equals(9850, lupus.celulasAmenazadas())
+	}
+	
+	
+	test "Punto 3 Temporada 2" {
+		cameron.contraerEnfermedad(malaria3000)
+		house.atenderA(cameron)
+		assert.equals(2700, malaria3000.celulasAmenazadas())
+	}
+	
+	
+	test "Punto 4 Temporada 2" {
+		cameron.contraerEnfermedad(malaria3000)
+		house.contraerEnfermedad(malaria500) // Hay que hacer un metodo para comprobar luego las celulas de la enfermedad de tal persona
+		assert.equals(2850, malaria3000.celulasAmenazadas())
+		assert.equals(350, malaria500.celulasAmenazadas())
+	}
+	
+	test "Punto 5 Temporada 2" {
+		house.contraerEnfermedad(laMuerte)
+		house.vivirUnDia()  // Se va a morir
+		assert.equals(0, house.temperatura())
+	}
 }
+

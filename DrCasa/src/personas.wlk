@@ -9,30 +9,26 @@ class Persona {
 	} 
 	
 	method aumentarTemperatura(unosGrados) {
-		if (temperatura < 45) {
-			temperatura += unosGrados	
-		}
+			temperatura = 45.min(temperatura + unosGrados)
 	}
 	
 	method destruirCelulas(unasCelulas) {
-		celulas -= unasCelulas
+		celulas = 0.max(celulas - unasCelulas)
 	}
 	
-	method vivirUnDia(_indice) {
+	method vivirUnDia() {
 		enfermedades.forEach { enfermedad => 
-			enfermedad.efecto(self)
+			enfermedad.afectarA(self)
 		}
-		diasAfectados++
+		
 	}
 	
 	method pasarDias(unosDias) {
-		unosDias.times ({indice => self.vivirUnDia(indice)})
+		unosDias.times ({_unDia => self.vivirUnDia()})
 	}
 	
 	method enfermedadQueMasCelulasAfecta() {
-		return enfermedades.max  { enfermedad =>
-			enfermedad.celulasAmenazadas()
-		}
+		return enfermedades.max { enfermedad => enfermedad.celulasAmenazadas()}
 	}
 	
 	method enComa() {
@@ -43,6 +39,20 @@ class Persona {
 		return enfermedades.filter { enfermedad => 
 			enfermedad.esAgresiva(self)
 		}.sum { enfermedad => enfermedad.celulasAmenazadas() }
+	}
+	
+	method atenuarEnfermedades(unaDosis) {
+		enfermedades.forEach { enfermedad => 
+			enfermedad.atenuarPara(self, unaDosis)
+		}
+	}
+	
+	method curar(unaEnfermedad) {
+		enfermedades.remove(unaEnfermedad)
+	}
+	
+	method morir() {
+		temperatura = 0
 	}
 	
 }

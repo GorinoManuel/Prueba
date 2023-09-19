@@ -1,30 +1,29 @@
-import personas.*
+class Enfermedad {
+	var celulasAmenazadas
+	
+	method celulasAmenazadas() {
+		return celulasAmenazadas
+	}
+	
+	method atenuarEn(unasCelulas) {
+		celulasAmenazadas = 0.max(self.celulasAmenazadas() - unasCelulas)
+	}
+	
+	method atenuarPara(unaPersona, unaDosis) {
+		self.atenuarEn(unaDosis*15)
+		self.verificarCuracion(unaPersona)
+	}
+	
+	method verificarCuracion(unaPersona) {
+		if (self.celulasAmenazadas() == 0) {
+			unaPersona.curar(self)
+		}
+	}
+	
+	method afectarA(unaPersona)
+	method esAgresiva(unaPersona)
+} 
 
-class EnfermedadInfecciosa {
-	var property celulasAmenazadas
-	
-	method efecto(unaPersona) {
-		unaPersona.aumentarTemperatura(celulasAmenazadas/1000)
-	}
-	
-	method esAgresiva(unaPersona) {
-		return celulasAmenazadas > unaPersona.celulas()*0.1
-	}
-	
-	method reproducir() {
-		celulasAmenazadas *= 2
-	}	
-}
 
-class EnfermedadAutoinmune {
-	const property celulasAmenazadas
-	
-	method efecto(unaPersona) {
-		unaPersona.destruirCelulas(celulasAmenazadas)
-	}
-	
-	method esAgresiva(unaPersona) {
-		return unaPersona.diasAfectados() > 30
-	}
-}
+
 
